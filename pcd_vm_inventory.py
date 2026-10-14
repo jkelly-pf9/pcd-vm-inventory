@@ -56,6 +56,19 @@ Authentication
     read -rs OS_PASSWORD && export OS_PASSWORD
     uv run pcd_vm_inventory.py -o vms.csv
 
+  Alternative: an existing Keystone token. Use OS_* variables, not
+  clouds.yaml; OS_* variables are ignored when --cloud is given. Set
+  OS_AUTH_TYPE to v3token (the RC file's "password" ignores the token) and
+  give a project, or the token has no roles or catalog:
+    export OS_AUTH_TYPE=v3token
+    export OS_AUTH_URL=https://<pcd-fqdn>/keystone/v3
+    export OS_PROJECT_NAME=service OS_PROJECT_DOMAIN_NAME=Default
+    read -rs OS_TOKEN && export OS_TOKEN
+    uv run pcd_vm_inventory.py -o vms.csv
+  A token cannot be renewed. If it expires during the run, later Regions
+  fail and the script exits with code 2. Use an application credential for
+  long exports.
+
 Private CA on the management plane
   Set OS_CACERT (or cacert: in clouds.yaml) to the CA bundle. Python uses
   certifi's bundle, not the system trust store, so update-ca-certificates
