@@ -84,11 +84,15 @@ Windows
     3. uv run pcd_vm_inventory.py --cloud pcd -o vms.csv
 
   The RC file is a bash script and cannot be sourced in PowerShell. To use
-  a password instead, set each OS_* variable from the file by hand, for
-  example $env:OS_AUTH_URL = "https://<pcd-fqdn>/keystone/v3", and enter
-  the password at a prompt:
-    $env:OS_PASSWORD = [Net.NetworkCredential]::new('',
-        (Read-Host -AsSecureString 'Password')).Password
+  a Keystone token instead, set the OS_* variables in PowerShell, enter the
+  token at a prompt, and omit --cloud (see the token notes above):
+    $env:OS_AUTH_TYPE = "v3token"
+    $env:OS_AUTH_URL = "https://<pcd-fqdn>/keystone/v3"
+    $env:OS_PROJECT_NAME = "service"
+    $env:OS_PROJECT_DOMAIN_NAME = "Default"
+    $env:OS_TOKEN = [Net.NetworkCredential]::new('',
+        (Read-Host -AsSecureString 'Token')).Password
+    uv run pcd_vm_inventory.py -o vms.csv
 
   Windows ignores Unix file modes, so chmod 600 has no effect and the CSV
   is not made owner-only: it takes the access rules of its folder. Keep
