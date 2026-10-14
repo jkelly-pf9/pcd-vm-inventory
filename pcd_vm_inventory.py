@@ -83,6 +83,16 @@ Windows
        %USERPROFILE%\\.config\\openstack\\.
     3. uv run pcd_vm_inventory.py --cloud pcd -o vms.csv
 
+  Without internet access (uv cannot download Python or packages), build
+  the offline bundle on a Linux or macOS machine that has uv:
+    ./build_windows_bundle.sh
+  Copy dist/pcd-vm-inventory-windows-x64.zip to the Windows machine and
+  unzip it. It holds Python, every dependency, and run.cmd, which takes the
+  same options as the script:
+    .\\pcd-vm-inventory\\run.cmd --cloud pcd -o vms.csv
+  If the zip was downloaded in a browser, run Unblock-File on it before
+  unzipping.
+
   The RC file is a bash script and cannot be sourced in PowerShell. To use
   a Keystone token instead, set the OS_* variables in PowerShell, enter the
   token at a prompt, and omit --cloud (see the token notes above):
