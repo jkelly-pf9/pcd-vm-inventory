@@ -61,10 +61,34 @@ Private CA on the management plane
   certifi's bundle, not the system trust store, so update-ca-certificates
   alone is not enough. Do not disable certificate verification.
 
+Windows
+  Run from PowerShell; WSL is not needed. Every dependency has a prebuilt
+  Windows wheel, so no compiler is required.
+    1. Install uv:  winget install --id=astral-sh.uv -e
+    2. Use clouds.yaml as above. On Windows it is read from the current
+       directory, %LOCALAPPDATA%\\OpenStack\\openstack\\, or
+       %USERPROFILE%\\.config\\openstack\\.
+    3. uv run pcd_vm_inventory.py --cloud pcd -o vms.csv
+
+  The RC file is a bash script and cannot be sourced in PowerShell. To use
+  a password instead, set each OS_* variable from the file by hand, for
+  example $env:OS_AUTH_URL = "https://<pcd-fqdn>/keystone/v3", and enter
+  the password at a prompt:
+    $env:OS_PASSWORD = [Net.NetworkCredential]::new('',
+        (Read-Host -AsSecureString 'Password')).Password
+
+  Windows ignores Unix file modes, so chmod 600 has no effect and the CSV
+  is not made owner-only: it takes the access rules of its folder. Keep
+  clouds.yaml and the CSV in a folder under your user profile, not a
+  shared one such as C:\\temp. For a private CA, set
+  $env:OS_CACERT = "C:\\path\\to\\ca.pem"; adding the CA to the Windows
+  certificate store is not enough.
+
 Output
   - One row per VM. The CSV is UTF-8 with a byte-order mark so Excel shows
     non-ASCII names correctly, and is created readable only by its owner
-    because it contains user names, email addresses, and VM details.
+    (Linux and macOS; see Windows above) because it contains user names,
+    email addresses, and VM details.
   - Text that a spreadsheet would run as a formula (a leading =, +, -, @,
     tab, or carriage return) is prefixed with a single quote. VM names and
     other tenant-supplied text cannot run as formulas when the file is opened.
